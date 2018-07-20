@@ -1,4 +1,3 @@
-
 function action(path, type){
 	title = "Action";
 	content = '';
@@ -712,10 +711,109 @@ function multimedia(path){
 	});
 	hide_box();
 }
-
+$(document).on("click", function(){
+	if($("#terminal").attr("style").match(/display:\sblock/im)){
+		$("#terminalInput").focus();
+	}
+});
+var current_path;
 $('#terminalInput').on('keydown', function(e){
+	//console.log(e.keyCode);
+	if(e.which == 17) {
+		isCtrl=true;
+	}else if(e.which == 85 && isCtrl == true){
+		$('#terminalInput').val("");
+		isCtrl=false;
+	}else{
+		isCtrl=false;
+	}
+	//自動補全
+	if(e.keyCode==9){
+		cmd = $('#terminalInput').val();
+		cmd=cmd.replace('\t',' ');
+		$('#terminalInput').val(cmd);
+		let cmd_num =cmd.split(" ").length;
+		let command = cmd.replace(/(.+)\s+(.+)/gim, "$1");
+		let file = cmd.replace(/(.+)\s+(.+)/gim, "$2");
+		file=file+"*";
+		if(command!=""&&cmd_num==1){
+			for(var n in executable_files){
+				//console.log(executable_files[n]);
+				var regex = new RegExp('^'+command, 'g' );
+				if(executable_files[n].match(regex)){
+					$('#terminalInput').val(executable_files[n].replace('\t',''));
+					break;
+				}
+			}
+		}
+		if(file!=''&&command=="cd"&&cmd_num>1){
+			send_post({ terminalInput: "ls -d "+file}, function(res){
+
+				if(!res.match(/No such file or directory/im)){
+					if(res.split('\n').length>2)  {
+						let origin=file.replace(/(.+)(\*)$/gim, "$1");
+						let origin_length=origin.length;
+						let files = res.split('\n');
+						let words1=files[0];	
+						let words2=files[1];	
+						let maxlength=0;	
+						for (i = 0; i < words1.length; i++) {
+							for (j = 0; j < words2.length; j++) {
+								if (words1[i] == words2[j]) {
+									maxlength=i;
+								}
+							}
+						}
+						var res = words1.substring(0,maxlength+1);
+						$('#terminalInput').val("cd "+res);
+					} else {
+						$('#terminalInput').val("cd "+res+"/");
+					}
+					return false;
+				}else{
+						cmd = $('#terminalInput').val();
+						$('#terminalInput').val(cmd.replace('\t',''));
+				}
+			});
+		}else if(file!=''&&cmd_num>1){
+			send_post({ terminalInput: "ls -d "+file}, function(res){
+				if(!res.match(/No such file or directory/im)){
+					$('#terminalInput').val(command+" "+res);
+				}else{
+						cmd = $('#terminalInput').val();
+						$('#terminalInput').val(cmd.replace('\t',''));
+				}
+			});
+		}
+	}
+
 	if(e.keyCode==13){
 		cmd = $('#terminalInput').val();
+		//emulator vim
+		if(cmd.replace(/(vi)(\s+)(.*)/gim, "$1")=="vi"||cmd.replace(/(vim)(\s+)(.*)/gim, "$1")=="vim"||cmd.replace(/(sublime)(\s+)(.*)/gim, "$1")=="sublime"||cmd.replace(/(subl)(\s+)(.*)/gim, "$1")=="subl"){
+			$('#terminalInput').val('');
+			let file = cmd.replace(/(vim|vi|sublime|subl)(\s+)(.*)/gim, "$3");
+			$("#terminalOutput").toggle();
+			$("#terminalPrompt").toggle();
+			$("#editor").toggle();
+			current_path=get_cwd()+file;
+			if(cmd.replace(/(sublime|subl)(\s+)(.*)/gim, "$1")=="sublime"){
+				console.log("sublime mode");
+				doc.setOption("keyMap", "sublime");
+			}else{
+				doc.setOption("keyMap", "vim");
+				console.log("Vim mode");
+			}
+			//取檔
+			$.post(window.location.href,{"viewFile":current_path,"viewType":"vim","preserveTimestamp":true},function(code){
+				doc.setSize("100%","50%");
+				code=code.substring(code.lastIndexOf("\n") + 20, -1 );
+				doc.setValue(code);
+			},'text');
+
+			console.log(file);
+			return false;	
+		}
 		terminalHistory.push(cmd);
 		terminalHistoryPos = terminalHistory.length;
 		if(cmd=='clear'||cmd=='cls'){
@@ -839,3 +937,4 @@ function eval_bind(){
 		fix_tabchar(this, e);
 	});
 }
+

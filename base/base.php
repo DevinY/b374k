@@ -39,7 +39,17 @@ $GLOBALS['module']['terminal']['id'] = "terminal";
 $GLOBALS['module']['terminal']['title'] = "Terminal";
 $GLOBALS['module']['terminal']['js_ontabselected'] = "
 if((!portableMode) && ($('#terminalOutput').html()=='')) $('#terminalInput').focus();";
-$GLOBALS['module']['terminal']['content'] = "<pre id='terminalOutput'></pre><table id='terminalPrompt'><tr><td class='colFit'><span id='terminalCwd' class='strong'>".get_cwd()."&gt;</span</td><td id='terminalCommand'><input type='text' id='terminalInput' class='floatLeft' spellcheck='false'></td></tr></table>";
+
+$paths = explode(":",getenv("PATH"));
+$files=[];
+foreach($paths as $path){
+	$files=array_diff(scandir($path), array('..', '.'));	
+}
+array_push($files,"sublime","subl");
+$executable_files=implode("','",$files);
+$GLOBALS['module']['terminal']['content'] = "<pre id='terminalOutput'></pre><table id='terminalPrompt'><tr><td class='colFit'><span id='terminalCwd' class='strong'>".get_cwd()."&gt;</span</td><td id='terminalCommand'><input type='text' id='terminalInput' class='floatLeft' spellcheck='false'></td></tr></table>
+<div id='editor' class='cm_middle' ></div><textarea id='source_code' style='display:none'></textarea>
+<script>var executable_files=['".$executable_files."'];</script>";
 
 
 $GLOBALS['module']['eval']['id'] = "eval";

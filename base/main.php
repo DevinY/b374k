@@ -563,7 +563,10 @@ if(!function_exists('view_file')){
 							<p><span class='button' onclick=\"multimedia('".html_safe(addslashes($file))."');\">Load Multimedia File</span></p>
 							</center>";
 			}
-			elseif($type=="edit"){
+			elseif($type=="vim"){
+				$preservecbox = ($preserveTimestamp=='true')? " cBoxSelected":"";
+				return read_file($file);
+			} elseif($type=="edit"){
 				$preservecbox = ($preserveTimestamp=='true')? " cBoxSelected":"";
 				$content = "<table id='editTbl'><tr><td colspan='2'><input type='text' id='editFilename' class='colSpan' value='".html_safe($file)."' onkeydown=\"trap_enter(event, 'edit_save_raw');\"></td></tr><tr><td class='colFit'><span class='button' onclick=\"edit_save_raw();\">save</span></td><td style='vertical-align:middle;'><div class='cBox".$preservecbox."'></div><span>preserve modification timestamp</span><span id='editResult'></span></td></tr><tr><td colspan='2'><textarea id='editInput' spellcheck='false' onkeydown=\"trap_ctrl_enter(this, event, 'edit_save_raw');\">".html_safe(read_file($file))."</textarea></td></tr></table>";
 			}
