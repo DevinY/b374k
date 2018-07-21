@@ -563,7 +563,9 @@ if(!function_exists('view_file')){
 							<p><span class='button' onclick=\"multimedia('".html_safe(addslashes($file))."');\">Load Multimedia File</span></p>
 							</center>";
 			}
-			elseif($type=="vim"){
+			elseif($type=="file_exists"){
+				return file_exists($file);
+			}elseif($type=="vim"){
 				$preservecbox = ($preserveTimestamp=='true')? " cBoxSelected":"";
 				return read_file($file);
 			} elseif($type=="edit"){

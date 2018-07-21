@@ -104,6 +104,19 @@ if(isset($p['cd'])){
 	else $res = "error";
 	output($res);
 }
+elseif(isset($p['fileExists'])){
+	$path = trim($p['fileExists']);
+
+	if(file_exists($path)){
+		if(is_dir($path)){
+			output("f");
+		}else{
+			output("y");
+		}
+	}else{
+		output("n");
+	}
+}
 elseif(isset($p['viewFile']) && isset($p['viewType'])){
 	$path = trim($p['viewFile']);
 	$type = trim($p['viewType']);

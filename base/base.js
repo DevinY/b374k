@@ -735,6 +735,7 @@ $('#terminalInput').on('keydown', function(e){
 		let cmd_num =cmd.split(" ").length;
 		let command = cmd.replace(/(.+)\s+(.+)/gim, "$1");
 		let file = cmd.replace(/(.+)\s+(.+)/gim, "$2");
+		console.log(file);
 		file=file+"*";
 		if(command!=""&&cmd_num==1){
 			for(var n in executable_files){
@@ -756,6 +757,8 @@ $('#terminalInput').on('keydown', function(e){
 						let files = res.split('\n');
 						let words1=files[0];	
 						let words2=files[1];	
+						console.log("words1:"+words1);
+						console.log("words2:"+words2);
 						let maxlength=0;	
 						for (i = 0; i < words1.length; i++) {
 							for (j = 0; j < words2.length; j++) {
@@ -777,6 +780,40 @@ $('#terminalInput').on('keydown', function(e){
 			});
 		}else if(file!=''&&cmd_num>1){
 			send_post({ terminalInput: "ls -d "+file}, function(res){
+						let temp = res;
+						let files = temp.split('\n');
+						if(files.length>2){
+							let words1=files[0];	
+							let words2=files[1];	
+							console.log("words1:"+words1);
+							console.log("words2:"+words2);
+							let maxlength=0;	
+							for (i = 0; i < 100; i++) {
+								if (words1[i] != words2[i]) {
+									console.log("W1&W2:"+words1[i]+":"+words2[i]);
+									maxlength=i;
+									console.log(maxlength);
+									break;
+								}
+							}
+							console.log(maxlength);
+							res = words1.substring(0,maxlength);
+
+							cwd = html_safe(get_cwd());
+							let files_str="";
+							for(n in files){
+								files_str+=" "+files[n];
+							}
+							res1 = '<span class=\'strong\'>'+cwd+'&gt;</span>'+html_safe(cmd)+ '\n' + files_str+'\n';
+							$('#terminalOutput').append(res1);
+
+							bottom = $(document).height()-$(window).height();
+							$(window).scrollTop(bottom);
+
+							$('#terminalInput').val("");
+						}
+
+				console.log(res);	
 				if(!res.match(/No such file or directory/im)){
 					$('#terminalInput').val(command+" "+res);
 				}else{
@@ -804,12 +841,39 @@ $('#terminalInput').on('keydown', function(e){
 				doc.setOption("keyMap", "vim");
 				console.log("Vim mode");
 			}
-			//取檔
-			$.post(window.location.href,{"viewFile":current_path,"viewType":"vim","preserveTimestamp":true},function(code){
-				doc.setSize("100%","50%");
-				code=code.substring(code.lastIndexOf("\n") + 20, -1 );
-				doc.setValue(code);
-			},'text');
+			console.log(current_path);
+
+			$.post(window.location.href,{"fileExists":current_path},function(res){
+				console.log(res);
+				if(res=="y"){
+					$.post(window.location.href,{"viewFile":current_path,"viewType":"vim","preserveTimestamp":true},function(code){
+						doc.setSize("100%","50%");
+						code=code.substring(code.lastIndexOf("\n") + 20, -1 );
+						doc.setValue(code);
+					},'text');
+				}
+				if(res=="n"){
+					$.post(window.location.href,{"newFile":current_path}, function(response){
+						$.post(window.location.href,{"viewFile":current_path,"viewType":"vim","preserveTimestamp":true},function(code){
+							doc.setSize("100%","50%");
+							code=code.substring(code.lastIndexOf("\n") + 20, -1 );
+							doc.setValue(code);
+						},'text');
+					},'text');
+				}
+				if(res=="f"){
+					res=current_path+" is a folder.";
+					cwd = html_safe(get_cwd());
+					res = '<span class=\'strong\'>'+cwd+'&gt;</span>'+html_safe(cmd)+ '\n' + res+'\n';
+					$('#terminalOutput').append(res);
+					bottom = $(document).height()-$(window).height();
+					$(window).scrollTop(bottom);
+					$("#terminalOutput").toggle();
+					$("#terminalPrompt").toggle();
+					$("#editor").toggle();
+					return false;
+				}
+			});
 
 			console.log(file);
 			return false;	
@@ -937,4 +1001,60 @@ function eval_bind(){
 		fix_tabchar(this, e);
 	});
 }
+
+$(function(){
+
+ 	doc = CodeMirror(document.getElementById("editor"), {
+ 			value: document.getElementById("source_code").value,
+ 			lineNumbers: true,
+ 			keyMap: "vim",
+ 			autofocus: false,
+ 			matchBrackets: true,
+ 			mode: "application/x-httpd-php",
+ 			indentUnit: 8,
+ 			indentWithTabs: true,
+ 			theme: "monokai"
+ 		});
+ 	doc.setOption("extraKeys", {
+ 		Tab: function(cm) {
+ 			var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
+ 			cm.replaceSelection(spaces);
+ 		}
+ 	});
+ 	$("#editor").hide();
+ 	$(document).on("keypress", function(){
+ 		$("#terminalInput").focus();
+ 	});
+ 	CodeMirror.commands.write_and_quit = function(){
+ 		let source = doc.getValue();
+ 		let postData={"code":source, "current_path":current_path};
+
+$.post(window.location.href, {"editType":"edit","editFilename":current_path,"editInput":source,"preserveTimestamp":true}, function(response){
+	if(response!=""){
+		$("#terminalOutput").toggle();
+		$("#terminalPrompt").toggle();
+		$("#editor").toggle();
+		$('#terminalInput').focus();
+	}else{
+		alert("Faile");
+	}
+	},'text');
+ 	};
+ 	CodeMirror.commands.quit = function(){
+			$("#terminalOutput").toggle();
+			$("#terminalPrompt").toggle();
+			$("#editor").toggle();
+ 	};
+ 	CodeMirror.commands.save = function(){ 
+ 		let source = doc.getValue();
+ 		let postData={"code":source, "current_path":current_path};
+ 		$.post("save.php",postData, function(response){
+			if(response=="y"){
+				alert("Saved");}
+			if(response=="n"){
+				alert("Faile");
+			}
+ 		},'text');
+ 	 };
+	});	
 

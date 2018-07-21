@@ -27,14 +27,14 @@ $module_code = packer_read_file($GLOBALS['packer']['base_dir']."base.php");
 /* JAVASCRIPT AND CSS FILES START */
 $zepto_code = packer_read_file($GLOBALS['packer']['base_dir']."zepto.js");
 $js_main_code = "\n\n".packer_read_file($GLOBALS['packer']['base_dir']."main.js");
-$js_main_code .= "\n\n".packer_read_file($GLOBALS['packer']['base_dir']."custom-codemirror.js");
+//$js_main_code .= "\n\n".packer_read_file($GLOBALS['packer']['base_dir']."custom-codemirror.js");
 
 $js_code = "\n\n".packer_read_file($GLOBALS['packer']['base_dir']."sortable.js").$js_main_code;
 $js_code .= "\n\n".packer_read_file($GLOBALS['packer']['base_dir']."base.js");
-/*
 $js_code .= "\n\n".packer_read_file($GLOBALS['packer']['codemirror']."lib/codemirror.js");
 $js_code .= "\n\n".packer_read_file($GLOBALS['packer']['codemirror']."addon/search/searchcursor.js");
 $js_code .= "\n\n".packer_read_file($GLOBALS['packer']['codemirror']."addon/dialog/dialog.js");
+$js_code .= "\n\n".packer_read_file($GLOBALS['packer']['codemirror']."addon/screen/autorefresh.js");
 $js_code .= "\n\n".packer_read_file($GLOBALS['packer']['codemirror']."keymap/vim.js");
 $js_code .= "\n\n".packer_read_file($GLOBALS['packer']['codemirror']."keymap/sublime.js");
 $js_code .= "\n\n".packer_read_file($GLOBALS['packer']['codemirror']."mode/htmlmixed/htmlmixed.js");
@@ -43,7 +43,6 @@ $js_code .= "\n\n".packer_read_file($GLOBALS['packer']['codemirror']."mode/javas
 $js_code .= "\n\n".packer_read_file($GLOBALS['packer']['codemirror']."mode/css/css.js");
 $js_code .= "\n\n".packer_read_file($GLOBALS['packer']['codemirror']."mode/clike/clike.js");
 $js_code .= "\n\n".packer_read_file($GLOBALS['packer']['codemirror']."mode/php/php.js");
-*/
 
 
 if(isset($_COOKIE['packer_theme']))	$theme = $_COOKIE['packer_theme'];

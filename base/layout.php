@@ -36,8 +36,8 @@
 }
 .cm_middle{
     border: 1px solid #eee;
-    display:block;
-    height:1600px;
+    max-height: 100%;
+    height:1000px;
 }
 </style>
 </head>
@@ -121,52 +121,6 @@ var init_shell = true;
 		echo "function ".$GLOBALS['module'][$k]['id']."(){ ".$GLOBALS['module'][$k]['js_ontabselected']." }\n";
 	}
 ?>
-</script>
-<script>
-$(function(){
- 	doc = CodeMirror(document.getElementById("editor"), {
- 			value: document.getElementById("source_code").value,
- 			lineNumbers: true,
- 			keyMap: "vim",
- 			matchBrackets: true,
- 			mode: "application/x-httpd-php",
- 			indentUnit: 8,
- 			indentWithTabs: true,
- 			theme: "monokai"
- 		});
- 	$("#editor").hide();
- 	CodeMirror.commands.write_and_quit = function(){
- 		let source = doc.getValue();
- 		let postData={"code":source, "current_path":current_path};
-
-$.post(window.location.href, {"editType":"edit","editFilename":current_path,"editInput":source,"preserveTimestamp":true}, function(response){
-	if(response!=""){
-		$("#terminalOutput").toggle();
-		$("#terminalPrompt").toggle();
-		$("#editor").toggle();
-		$('#terminalInput').focus();
-	}else{
-		alert("Faile");
-	}
-	},'text');
- 	};
- 	CodeMirror.commands.quit = function(){
-			$("#terminalOutput").toggle();
-			$("#terminalPrompt").toggle();
-			$("#editor").toggle();
- 	};
- 	CodeMirror.commands.save = function(){ 
- 		let source = doc.getValue();
- 		let postData={"code":source, "current_path":current_path};
- 		$.post("save.php",postData, function(response){
-			if(response=="y"){
-				alert("Saved");}
-			if(response=="n"){
-				alert("Faile");
-			}
- 		},'text');
- 	 };
-	});	
 </script>
 <!--script end-->
 </body>
