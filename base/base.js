@@ -847,7 +847,6 @@ $('#terminalInput').on('keydown', function(e){
 				if(res=="y"){
 					$.post(window.location.href,{"viewFile":current_path,"viewType":"vim","preserveTimestamp":true},function(code){
 						doc.setSize("100%","50%");
-						code=code.substring(code.lastIndexOf("\n") + 20, -1 );
 						doc.setValue(code);
 					},'text');
 				}
@@ -855,7 +854,6 @@ $('#terminalInput').on('keydown', function(e){
 					$.post(window.location.href,{"newFile":current_path}, function(response){
 						$.post(window.location.href,{"viewFile":current_path,"viewType":"vim","preserveTimestamp":true},function(code){
 							doc.setSize("100%","50%");
-							code=code.substring(code.lastIndexOf("\n") + 20, -1 );
 							doc.setValue(code);
 						},'text');
 					},'text');
