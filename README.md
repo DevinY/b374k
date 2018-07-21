@@ -10,10 +10,11 @@ This PHP Shell is a useful tool for system or web administrator to do remote man
  * 游標顯示優化 (Input cursor is improved)
  
  已知問題(Known issues):
- 
+ 命令列打包檔案會有問題，請採用web介面打包。
  打包時不可設定移除註解及空白，Termianl中的Vim將無法使用(我不打算修正這個問題)。
  
  Vim will won't work in termianl if you have setting strip comments and whitespaces to yes.
+ 
 
 Features :
  * File manager (view, edit, rename, delete, upload, download, archiver, etc)
