@@ -17,6 +17,15 @@
 
 <style type="text/css">
 <__CSS__>
+
+
+
+input#terminalInput {
+  padding-left:2px;
+  caret-color: red;
+  font-size: 10px; 
+}
+
 #navigation{position:fixed;left:-16px;top:46%;}
 #totop,#tobottom,#toggleBasicInfo{background:url('<?php echo get_resource('arrow');?>');width:32px;height:32px;opacity:0.30;margin:18px 0;cursor:pointer;}
 #totop:hover,#tobottom:hover{opacity:0.80;}

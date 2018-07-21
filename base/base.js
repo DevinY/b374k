@@ -841,8 +841,7 @@ $('#terminalInput').on('keydown', function(e){
 				doc.setOption("keyMap", "vim");
 				console.log("Vim mode");
 			}
-			console.log(current_path);
-
+			//console.log(current_path);
 			$.post(window.location.href,{"fileExists":current_path},function(res){
 				console.log(res);
 				if(res=="y"){
@@ -1025,36 +1024,36 @@ $(function(){
  	$(document).on("keypress", function(){
  		$("#terminalInput").focus();
  	});
- 	CodeMirror.commands.write_and_quit = function(){
+
+ 	var save = function(save_cmd){
  		let source = doc.getValue();
  		let postData={"code":source, "current_path":current_path};
+ 		$.post(window.location.href, {"editType":"edit","editFilename":current_path,"editInput":source,"preserveTimestamp":true}, function(response){
+ 			if(response!=""&&save_cmd=="wq"){
+ 				$("#terminalOutput").toggle();
+ 				$("#terminalPrompt").toggle();
+ 				$("#editor").toggle();
+ 				$('#terminalInput').focus();
+ 			}else if(response!=""&&save_cmd=="w"){
+ 				alert("saved");
+ 			}else{
+ 				alert("Faile");
+ 			}
+ 		},'text');
+ 	}
 
-$.post(window.location.href, {"editType":"edit","editFilename":current_path,"editInput":source,"preserveTimestamp":true}, function(response){
-	if(response!=""){
-		$("#terminalOutput").toggle();
-		$("#terminalPrompt").toggle();
-		$("#editor").toggle();
-		$('#terminalInput').focus();
-	}else{
-		alert("Faile");
-	}
-	},'text');
+ 	CodeMirror.commands.write_and_quit = function(){
+ 		save("wq");
  	};
+
  	CodeMirror.commands.quit = function(){
 			$("#terminalOutput").toggle();
 			$("#terminalPrompt").toggle();
 			$("#editor").toggle();
  	};
+
  	CodeMirror.commands.save = function(){ 
- 		let source = doc.getValue();
- 		let postData={"code":source, "current_path":current_path};
- 		$.post("save.php",postData, function(response){
-			if(response=="y"){
-				alert("Saved");}
-			if(response=="n"){
-				alert("Faile");
-			}
- 		},'text');
+ 		save("w");
  	 };
 	});	
 
