@@ -1,7 +1,21 @@
+
+
 # b374k shell 3.2
 This PHP Shell is a useful tool for system or web administrator to do remote management without using cpanel, connecting using ssh, ftp etc. All actions take place within a web browser
 
-Features : 
+#### Termianl Plus (By Devin Yang)
+ * 支援ctrl+u刪除文字 (Add ctrl+u to wipe out mistyped)
+ * 路徑及檔案自動補全 (Path autocomplete)
+ * Vim及Sublime編輯模式 (vim and sublme Power by codemirror)
+ * 游標顯示優化 (Input cursor is improved)
+ 
+ 已知問題(Known issues):
+ 
+ 打包時不可設定移除註解及空白，Termianl中的Vim將無法使用(我不打算修正這個問題)。
+ 
+ Vim will won't work in termianl if you have setting strip comments and whitespaces to yes.
+
+Features :
  * File manager (view, edit, rename, delete, upload, download, archiver, etc)
  * Search file, file content, folder (also using regex)
  * Command execution
